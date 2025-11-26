@@ -51,6 +51,10 @@ sealed class Command() {
 
                     "HISTORY" -> History()
 
+                    "ASSEMBLED" -> Assembled()
+
+                    "BYTES" -> Bytes()
+
                     "EXIT" -> Exit()
 
                     else -> Null("COMMAND NOT FOUND")
@@ -63,12 +67,23 @@ sealed class Command() {
     }
 
     abstract fun invoke()
+    abstract fun asBytes(): ByteArray
 
     data class LoadConstant(val A: Int, val B: Int, val C: Int) : Command() {
         override fun toString() = "A=$A B=$B C=$C"
 
         override fun invoke() {
             //TODO
+        }
+
+        override fun asBytes(): ByteArray {
+            val commandValue = A or (B shl 6) or (C shl 12)
+            val bytes = ByteArray(4)
+            bytes[0] = (commandValue and 0xFF).toByte()
+            bytes[1] = ((commandValue shr 8) and 0xFF).toByte()
+            bytes[2] = ((commandValue shr 16) and 0xFF).toByte()
+            bytes[3] = ((commandValue shr 24) and 0xFF).toByte()
+            return bytes
         }
     }
     data class Read(val A: Int, val B: Int, val C: Int) : Command() {
@@ -77,12 +92,31 @@ sealed class Command() {
         override fun invoke() {
             //TODO
         }
+
+        override fun asBytes(): ByteArray {
+            val commandValue = A or (B shl 6) or (C shl 12)
+            val bytes = ByteArray(3)
+            bytes[0] = (commandValue and 0xFF).toByte()
+            bytes[1] = ((commandValue shr 8) and 0xFF).toByte()
+            bytes[2] = ((commandValue shr 16) and 0xFF).toByte()
+            return bytes
+        }
     }
     data class Write(val A: Int, val B: Int, val C: Int, val D: Int) : Command() {
         override fun toString() = "A=$A B=$B C=$C D=$D"
 
         override fun invoke() {
             //TODO
+        }
+
+        override fun asBytes(): ByteArray {
+            val commandValue = A or (B shl 6) or (C shl 12) or (D shl 24)
+            val bytes = ByteArray(4)
+            bytes[0] = (commandValue and 0xFF).toByte()
+            bytes[1] = ((commandValue shr 8) and 0xFF).toByte()
+            bytes[2] = ((commandValue shr 16) and 0xFF).toByte()
+            bytes[3] = ((commandValue shr 24) and 0xFF).toByte()
+            return bytes
         }
     }
     data class Negative(val A: Int, val B: Int, val C: Int) : Command() {
@@ -91,20 +125,44 @@ sealed class Command() {
         override fun invoke() {
             //TODO
         }
+
+        override fun asBytes(): ByteArray {
+            val commandValue = A or (B shl 6) or (C shl 12)
+            val bytes = ByteArray(5)
+            bytes[0] = (commandValue and 0xFF).toByte()
+            bytes[1] = ((commandValue shr 8) and 0xFF).toByte()
+            bytes[2] = ((commandValue shr 16) and 0xFF).toByte()
+            bytes[3] = ((commandValue shr 24) and 0xFF).toByte()
+            bytes[4] = ((commandValue shr 32) and 0xFF).toByte()
+            return bytes
+        }
     }
 
     class History(): Command() {
         override fun invoke() {}
+        override fun asBytes() = ByteArray(0)
+    }
+
+    class Assembled(): Command() {
+        override fun invoke() {}
+        override fun asBytes() = ByteArray(0)
+    }
+
+    class Bytes(): Command() {
+        override fun invoke() {}
+        override fun asBytes() = ByteArray(0)
     }
 
     class Exit(): Command() {
         override fun invoke() {
             exitProcess(0)
         }
+        override fun asBytes() = ByteArray(0)
 
     }
 
     class Null(val message: String): Command() {
         override fun invoke() {}
+        override fun asBytes() = ByteArray(0)
     }
 }
