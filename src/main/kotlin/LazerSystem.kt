@@ -34,6 +34,7 @@ class LazerSystem {
 
             val output = File(outputPath)
             system.printAssembled()
+            commands.forEach { output.appendBytes(it.asBytes()) }
             val sc = Scanner(System.`in`)
             while (true) {
                 val input = sc.nextLine()
@@ -46,7 +47,7 @@ class LazerSystem {
                     else -> {
                         command.invoke()
                         system.history.add(command)
-                        output.writeBytes(command.asBytes())
+                        output.appendBytes(command.asBytes())
                         system.assembledCount++
                     }
                 }
