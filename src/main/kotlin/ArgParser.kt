@@ -36,7 +36,7 @@ class ArgParser: CliktCommand(name="ASSEMBLER CLI") {
         if (range != null) {
             val (start, end) = range!!.split(":").map { it.toInt() }
             if (start > end) throw UsageError("INVALID RANGE")
-            if (end > LazerSystem.MEMORY_SIZE) throw UsageError("RANGE OUT OF MEMORY BOUNDS")
+            if (end > LazerSystem.DEFAULT_MEM_SIZE) throw UsageError("RANGE OUT OF MEMORY BOUNDS")
         }
     }
 }
